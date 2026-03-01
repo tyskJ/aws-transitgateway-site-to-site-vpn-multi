@@ -26,3 +26,13 @@ resource "aws_subnet" "this" {
     Name = each.value.name
   }
 }
+
+/************************************************************
+Internet Gateway
+************************************************************/
+resource "aws_internet_gateway" "this" {
+  vpc_id = aws_vpc.this["onpremises"].id
+  tags = {
+    Name = "onpremises-igw"
+  }
+}
