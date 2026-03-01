@@ -35,7 +35,7 @@ locals {
     }
     aws_tgw_private_a = {
       vpc_key    = "aws"
-      name       = "aws-client-tgw-subnet-a"
+      name       = "aws-tgw-private-subnet-a"
       az         = "a"
       cidr       = "172.16.254.240/28"
       map_public = false
