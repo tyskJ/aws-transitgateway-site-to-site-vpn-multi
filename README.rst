@@ -16,8 +16,8 @@ AWS Transit Gateway + AWS Site-to-Site VPN
 
 作業環境 - ローカル -
 =====================================================================
-* macOS Tahoe ( v26.2 )
-* Visual Studio Code 1.108.2
+* macOS Tahoe ( v26.3 )
+* Visual Studio Code 1.109.5
 * Terraform v1.14.5
 * aws-cli/2.32.10 Python/3.13.9 Darwin/25.2.0 exe/arm64
 
