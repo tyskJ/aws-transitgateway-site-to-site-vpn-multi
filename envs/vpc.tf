@@ -117,15 +117,6 @@ resource "aws_security_group_rule" "aws_client_ec2_ingress_all" {
   security_group_id = aws_security_group.this["aws_client_ec2"].id
   description       = "From Onpremises Clinet EC2 Traffic"
 }
-resource "aws_security_group_rule" "onpremises_client_ec2_egress_all" {
-  type              = "egress"
-  from_port         = 0
-  to_port           = 0
-  protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.this["onpremises_client_ec2"].id
-  description       = "To Unrestricted Traffic"
-}
 resource "aws_security_group_rule" "onpremises_gateway_ec2_gip_egress_all" {
   type              = "egress"
   from_port         = 0
@@ -135,12 +126,12 @@ resource "aws_security_group_rule" "onpremises_gateway_ec2_gip_egress_all" {
   security_group_id = aws_security_group.this["onpremises_gateway_ec2_gip"].id
   description       = "To Unrestricted Traffic"
 }
-resource "aws_security_group_rule" "onpremises_vpc_endpoints_ingress_https" {
-  type                     = "ingress"
-  from_port                = 443
-  to_port                  = 443
-  protocol                 = "tcp"
-  source_security_group_id = aws_security_group.this["onpremises_client_ec2"].id
-  security_group_id        = aws_security_group.this["onpremises_vpc_endpoints"].id
-  description              = "From Onpremises Client EC2 To AWS Service Endpoints"
+resource "aws_security_group_rule" "onpremises_cloudshell_egress_all" {
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.this["onpremises_cloudshell"].id
+  description       = "To Unrestricted Traffice"
 }

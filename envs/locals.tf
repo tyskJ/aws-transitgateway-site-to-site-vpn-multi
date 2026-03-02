@@ -102,11 +102,6 @@ locals {
       name        = "aws-client-ec2-sg"
       description = "For AWS VPC Client EC2"
     }
-    onpremises_client_ec2 = {
-      vpc_key     = "onpremises"
-      name        = "onpremises-client-ec2-sg"
-      description = "For Onpremises VPC Client EC2"
-    }
     onpremises_gateway_ec2_gip = {
       vpc_key     = "onpremises"
       name        = "onpremises-gateway-ec2-gip-sg"
@@ -117,10 +112,10 @@ locals {
       name        = "onpremises-gateway-ec2-pip-sg"
       description = "For Onpremises VPC Gateway EC2 PIP"
     }
-    onpremises_vpc_endpoints = {
+    onpremises_cloudshell = {
       vpc_key     = "onpremises"
-      name        = "onpremises-vpcep-sg"
-      description = "For Onpremises VPC VPC Interface Endpoints"
+      name        = "onpremises-cloudshell-sg"
+      description = "For Onpremises VPC CloudShell"
     }
   }
 }
