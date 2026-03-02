@@ -63,3 +63,31 @@ locals {
     }
   }
 }
+
+/************************************************************
+RouteTables
+************************************************************/
+locals {
+  rtbs = {
+    aws_client_private_a = {
+      vpc_key = "aws"
+      name    = "aws-client-private-a-rtb"
+    }
+    aws_tgw_private_a = {
+      vpc_key = "aws"
+      name    = "aws-tgw-private-a-rtb"
+    }
+    onpremises_client_private_a = {
+      vpc_key = "onpremises"
+      name    = "onpremises-client-private-a-rtb"
+    }
+    onpremises_gateway_public_a = {
+      vpc_key = "onpremises"
+      name    = "onpremises-gateway-public-a-rtb"
+    }
+    onpremises_gateway_public_c = {
+      vpc_key = "onpremises"
+      name    = "onpremises-gateway-public-c-rtb"
+    }
+  }
+}

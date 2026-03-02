@@ -49,3 +49,15 @@ resource "aws_nat_gateway" "name" {
     Name = "onpremises-regional-nat"
   }
 }
+
+/************************************************************
+RouteTable
+************************************************************/
+resource "aws_route_table" "this" {
+  for_each = local.rtbs
+
+  vpc_id = aws_vpc.this[each.value.vpc_key].id
+  tags = {
+    Name = each.value.name
+  }
+}
