@@ -64,7 +64,7 @@ resource "aws_eip" "this" {
 /************************************************************
 EC2 - Client
 ************************************************************/
-resource "aws_instance" "client" {
+resource "aws_instance" "aws_client" {
   ami                         = data.aws_ssm_parameter.amazonlinux_2023.value
   associate_public_ip_address = false
   key_name                    = aws_key_pair.keypair.id
