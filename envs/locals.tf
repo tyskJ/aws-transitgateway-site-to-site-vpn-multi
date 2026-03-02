@@ -148,4 +148,34 @@ locals {
       name = "onpremises-gateway-ec2-c"
     }
   }
+  enis = {
+    onpremises_gateway_ec2_a_primary = {
+      name           = "onpremises-gateway-a-primary-eni"
+      description    = "gateway a primary eni"
+      subnet_key     = "onpremises_gateway_public_a"
+      srcdst         = false
+      sg_key         = "onpremises_gateway_ec2_gip"
+    }
+    onpremises_gateway_ec2_a_secondary = {
+      name           = "onpremises-gateway-a-secondary-eni"
+      description    = "gateway a secondary eni"
+      subnet_key     = "onpremises_gateway_public_a"
+      srcdst         = false
+      sg_key         = "onpremises_gateway_ec2_pip"
+    }
+    onpremises_gateway_ec2_c_primary = {
+      name           = "onpremises-gateway-c-primary-eni"
+      description    = "gateway c primary eni"
+      subnet_key     = "onpremises_gateway_public_c"
+      srcdst         = false
+      sg_key         = "onpremises_gateway_ec2_gip"
+    }
+    onpremises_gateway_ec2_c_secondary = {
+      name           = "onpremises-gateway-c-secondary-eni"
+      description    = "gateway c secondary eni"
+      subnet_key     = "onpremises_gateway_public_c"
+      srcdst         = false
+      sg_key         = "onpremises_gateway_ec2_pip"
+    }
+  }
 }

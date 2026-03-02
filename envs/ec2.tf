@@ -29,3 +29,20 @@ resource "aws_iam_instance_profile" "this" {
   name = each.value.name
   role = aws_iam_role.ec2_role.name
 }
+
+/************************************************************
+Elastice Network Interface
+************************************************************/
+resource "aws_network_interface" "this" {
+  for_each = local.enis
+
+  subnet_id      = aws_subnet.this[each.value.subnet_key].id
+  description    = each.value.description
+  security_groups = [
+    aws_security_group.this[each.value.sg_key].id
+  ]
+  source_dest_check = each.value.srcdst
+  tags = {
+    Name = each.value.name
+  }
+}
