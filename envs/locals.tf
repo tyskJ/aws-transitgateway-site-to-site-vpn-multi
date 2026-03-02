@@ -138,8 +138,8 @@ EC2
 ************************************************************/
 locals {
   instanceprofiles = {
-    onpremises_client_ec2 = {
-      name = "onpremises-client-ec2"
+    aws_client_ec2 = {
+      name = "aws-client-ec2"
     }
     onpremises_gateway_ec2_a = {
       name = "onpremises-gateway-ec2-a"
