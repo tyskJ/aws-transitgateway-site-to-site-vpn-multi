@@ -81,8 +81,8 @@ resource "aws_route" "onpremises_gateway_public_to_igw" {
   gateway_id             = aws_internet_gateway.this.id
 }
 resource "aws_route" "aws_client_private_to_tgw" {
-  depends_on = [ aws_ec2_transit_gateway_vpc_attachment.this ]
-  
+  depends_on = [aws_ec2_transit_gateway_vpc_attachment.this]
+
   route_table_id         = aws_route_table.this["aws_client_private"].id
   destination_cidr_block = "0.0.0.0/0"
   transit_gateway_id     = aws_ec2_transit_gateway.this.id
@@ -122,6 +122,15 @@ resource "aws_security_group_rule" "onpremises_gateway_ec2_gip_egress_all" {
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.this["onpremises_gateway_ec2_gip"].id
   description       = "To Unrestricted Traffic"
+}
+resource "aws_security_group_rule" "onpremises_gateway_ec2_pip_ingress_private" {
+  type              = "ingress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = [local.vpcs.onpremises.cidr]
+  security_group_id = aws_security_group.this["onpremises_gateway_ec2_pip"].id
+  description       = "From Onpremises Private NW Traffic"
 }
 resource "aws_security_group_rule" "onpremises_cloudshell_egress_all" {
   type              = "egress"
