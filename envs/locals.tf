@@ -91,3 +91,36 @@ locals {
     }
   }
 }
+
+/************************************************************
+Security Group
+************************************************************/
+locals {
+  sgs = {
+    aws_client_ec2 = {
+      vpc_key     = "aws"
+      name        = "aws-client-ec2-sg"
+      description = "For AWS VPC Client EC2"
+    }
+    onpremises_client_ec2 = {
+      vpc_key     = "onpremises"
+      name        = "onpremises-client-ec2-sg"
+      description = "For Onpremises VPC Client EC2"
+    }
+    onpremises_gateway_ec2_gip = {
+      vpc_key     = "onpremises"
+      name        = "onpremises-gateway-ec2-gip-sg"
+      description = "For Onpremises VPC Gateway EC2 GIP"
+    }
+    onpremises_gateway_ec2_pip = {
+      vpc_key     = "onpremises"
+      name        = "onpremises-gateway-ec2-pip-sg"
+      description = "For Onpremises VPC Gateway EC2 PIP"
+    }
+    onpremises_vpc_endpoints = {
+      vpc_key     = "onpremises"
+      name        = "onpremises-vpcep-sg"
+      description = "For Onpremises VPC VPC Interface Endpoints"
+    }
+  }
+}
