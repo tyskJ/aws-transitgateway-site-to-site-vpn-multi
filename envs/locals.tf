@@ -69,25 +69,38 @@ RouteTables
 ************************************************************/
 locals {
   rtbs = {
-    aws_client_private_a = {
+    aws_client_private = {
       vpc_key = "aws"
-      name    = "aws-client-private-a-rtb"
+      name    = "aws-client-private-rtb"
+    }
+    aws_tgw_private = {
+      vpc_key = "aws"
+      name    = "aws-tgw-private-rtb"
+    }
+    onpremises_client_private = {
+      vpc_key = "onpremises"
+      name    = "onpremises-client-private-rtb"
+    }
+    onpremises_gateway_public = {
+      vpc_key = "onpremises"
+      name    = "onpremises-gateway-public-rtb"
+    }
+  }
+  associations = {
+    aws_client_private_a = {
+      rtb_key = "aws_client_private"
     }
     aws_tgw_private_a = {
-      vpc_key = "aws"
-      name    = "aws-tgw-private-a-rtb"
+      rtb_key = "aws_tgw_private"
     }
     onpremises_client_private_a = {
-      vpc_key = "onpremises"
-      name    = "onpremises-client-private-a-rtb"
+      rtb_key = "onpremises_client_private"
     }
     onpremises_gateway_public_a = {
-      vpc_key = "onpremises"
-      name    = "onpremises-gateway-public-a-rtb"
+      rtb_key = "onpremises_gateway_public"
     }
     onpremises_gateway_public_c = {
-      vpc_key = "onpremises"
-      name    = "onpremises-gateway-public-c-rtb"
+      rtb_key = "onpremises_gateway_public"
     }
   }
 }
