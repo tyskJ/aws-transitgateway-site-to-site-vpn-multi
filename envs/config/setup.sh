@@ -26,11 +26,17 @@ ufw disable
 ### all: 全インターフェース適用
 ### default: インターフェース側で未設定の場合に適用
 ### ip_forward = 1 [あるNICで受信したバケットを別NICへ送出する]
-### ip_no_pmtu_disc = 0 [Path MTU Discoveryを無効化]
-### accept_redirects = 0 [ICMPリダイレクトパケットの受入無効化]
-### send_redirects = 0 [ICMPリダイレクトパケットの送出無効化]
+### rp_filter = 0 [複数のNICからパケットが出入りするため Reverse Path Filteringを無効化]
+### accept_source_route = 0 [ソースルーティングパケットの受入無効化]
+### ip_no_pmtu_disc = 0 [通信遅延をなくすためPath MTU Discoveryを無効化]
+### accept_redirects = 0 [セキュリティ上の理由よりICMPリダイレクトパケットの受入無効化]
+### send_redirects = 0 [セキュリティ上の理由よりICMPリダイレクトパケットの送出無効化]
 cat <<EOF > /etc/sysctl.d/99-vpn.conf
 net.ipv4.ip_forward = 1
+net.ipv4.conf.all.rp_filter = 0
+net.ipv4.conf.default.rp_filter = 0
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv4.conf.default.accept_source_route = 0
 net.ipv4.ip_no_pmtu_disc=0
 net.ipv4.conf.all.accept_redirects = 0
 net.ipv4.conf.default.accept_redirects = 0
