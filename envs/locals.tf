@@ -190,3 +190,21 @@ locals {
     }
   }
 }
+
+/************************************************************
+S2S VPN
+************************************************************/
+locals {
+  cgws = {
+    onpremises_gateway_ec2_a = {
+      name    = "cgw-onpremises-gateway-ec2-a"
+      asn     = 65000
+      eip_key = "onpremises_gateway_ec2_a_primary"
+    }
+    onpremises_gateway_ec2_c = {
+      name    = "cgw-onpremises-gateway-ec2-c"
+      asn     = 65001
+      eip_key = "onpremises_gateway_ec2_c_primary"
+    }
+  }
+}
