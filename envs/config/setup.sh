@@ -22,7 +22,7 @@ setupcon # ttyへ即時反映
 # Firewall 無効化
 ufw disable
 
-# IP Forward & rp_filter
+# Network
 ### all: 全インターフェース適用
 ### default: インターフェース側で未設定の場合に適用
 ### ip_forward = 1 [あるNICで受信したバケットを別NICへ送出する]
