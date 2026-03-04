@@ -207,4 +207,12 @@ locals {
       eip_key = "onpremises_gateway_ec2_c_primary"
     }
   }
+  vpncons = {
+    onpremises_gateway_ec2_a = {
+      name = "connections-onpremises-gateway-ec2-a"
+    }
+    # onpremises_gateway_ec2_c = {
+    #   name = "connections-onpremises-gateway-ec2-c"
+    # }
+  }
 }
