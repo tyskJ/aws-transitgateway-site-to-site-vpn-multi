@@ -30,19 +30,19 @@ resource "aws_vpn_connection" "this" {
   local_ipv4_network_cidr  = "0.0.0.0/0"
   remote_ipv4_network_cidr = "0.0.0.0/0"
   outside_ip_address_type  = "PublicIpv4"
-  # ### Tunnel 1
+  ### Tunnel 1
   # tunnel1_inside_cidr                     = "169.254.208.48/30"
   # tunnel1_preshared_key                   = null # sensitive
-  # tunnel1_log_options {
-  #   cloudwatch_log_options {
-  #     bgp_log_enabled       = false
-  #     bgp_log_group_arn     = null
-  #     bgp_log_output_format = null
-  #     log_enabled           = false
-  #     log_group_arn         = null
-  #     log_output_format     = null
-  #   }
-  # }
+  tunnel1_log_options {
+    cloudwatch_log_options {
+      bgp_log_enabled       = true
+      bgp_log_group_arn     = aws_cloudwatch_log_group.this[each.value.logs_tunnel1_bgp_key].arn
+      bgp_log_output_format = "json"
+      log_enabled           = true
+      log_group_arn         = aws_cloudwatch_log_group.this[each.value.logs_tunnel1_vpn_key].arn
+      log_output_format     = "json"
+    }
+  }
   # ##### Advanced
   # tunnel1_phase1_encryption_algorithms    = []
   # tunnel1_phase2_encryption_algorithms    = []
@@ -60,19 +60,19 @@ resource "aws_vpn_connection" "this" {
   # tunnel1_dpd_timeout_action              = null
   # tunnel1_startup_action                  = null
   # tunnel1_enable_tunnel_lifecycle_control = false
-  # ### Tunnel 2
+  ### Tunnel 2
   # tunnel2_inside_cidr                     = "169.254.125.244/30"
   # tunnel2_preshared_key                   = null # sensitive
-  # tunnel2_log_options {
-  #   cloudwatch_log_options {
-  #     bgp_log_enabled       = false
-  #     bgp_log_group_arn     = null
-  #     bgp_log_output_format = null
-  #     log_enabled           = false
-  #     log_group_arn         = null
-  #     log_output_format     = null
-  #   }
-  # }
+  tunnel2_log_options {
+    cloudwatch_log_options {
+      bgp_log_enabled       = true
+      bgp_log_group_arn     = aws_cloudwatch_log_group.this[each.value.logs_tunnel2_bgp_key].arn
+      bgp_log_output_format = "json"
+      log_enabled           = true
+      log_group_arn         = aws_cloudwatch_log_group.this[each.value.logs_tunnel2_vpn_key].arn
+      log_output_format     = "json"
+    }
+  }
   # ##### Advanced
   # tunnel2_phase1_encryption_algorithms    = []
   # tunnel2_phase2_encryption_algorithms    = []

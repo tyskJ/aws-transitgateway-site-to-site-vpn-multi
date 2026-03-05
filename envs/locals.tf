@@ -192,6 +192,30 @@ locals {
 }
 
 /************************************************************
+CloudWatch Logs
+************************************************************/
+locals {
+  logs = {
+    onpremises_gateway_ec2_a_tunnel1_vpn = {
+      name          = "/aws/connections/gateway/a/tunnel1/vpn"
+      retention_day = 7
+    }
+    onpremises_gateway_ec2_a_tunnel1_bgp = {
+      name          = "/aws/connections/gateway/a/tunnel1/bgp"
+      retention_day = 7
+    }
+    onpremises_gateway_ec2_a_tunnel2_vpn = {
+      name          = "/aws/connections/gateway/a/tunnel2/vpn"
+      retention_day = 7
+    }
+    onpremises_gateway_ec2_a_tunnel2_bgp = {
+      name          = "/aws/connections/gateway/a/tunnel2/bgp"
+      retention_day = 7
+    }
+  }
+}
+
+/************************************************************
 S2S VPN
 ************************************************************/
 locals {
@@ -209,10 +233,18 @@ locals {
   }
   vpncons = {
     onpremises_gateway_ec2_a = {
-      name = "connections-onpremises-gateway-ec2-a"
+      name                 = "connections-onpremises-gateway-ec2-a"
+      logs_tunnel1_bgp_key = "onpremises_gateway_ec2_a_tunnel1_bgp"
+      logs_tunnel1_vpn_key = "onpremises_gateway_ec2_a_tunnel1_vpn"
+      logs_tunnel2_bgp_key = "onpremises_gateway_ec2_a_tunnel2_bgp"
+      logs_tunnel2_vpn_key = "onpremises_gateway_ec2_a_tunnel2_vpn"
     }
     # onpremises_gateway_ec2_c = {
     #   name = "connections-onpremises-gateway-ec2-c"
+    #   logs_tunnel1_bgp_key = "onpremises_gateway_ec2_c_tunnel1_bgp"
+    #   logs_tunnel1_vpn_key = "onpremises_gateway_ec2_c_tunnel1_vpn"
+    #   logs_tunnel2_bgp_key = "onpremises_gateway_ec2_c_tunnel2_bgp"
+    #   logs_tunnel2_vpn_key = "onpremises_gateway_ec2_c_tunnel2_vpn"
     # }
   }
 }
