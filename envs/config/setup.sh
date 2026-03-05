@@ -56,6 +56,11 @@ apt autoremove -y
 cat <<EOF > /etc/swanctl/conf.d/tgw.tf
 EOF
 
+mkdir -p /etc/swanctl/scripts
+cat <<EOF >  /etc/swanctl/scripts/vti-updown.sh
+EOF
+chmod +x /etc/swanctl/scripts/vti-updown.sh
+
 cat <<EOF > /etc/strongswan.d/add-charon.conf
 charon {
 
