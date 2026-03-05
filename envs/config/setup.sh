@@ -68,7 +68,7 @@ apt autoremove -y
 ########################################
 # XFMR 
 ########################################
-# AddressにはTGWのトンネル定義の値を入れること
+# AddressにはEC2のInsideIPを入れる
 cat <<EOF > /etc/systemd/system/xfrm-ifaces.service
 [Unit]
 Description=Create XFRM interfaces for IPsec (idempotent)
@@ -85,12 +85,12 @@ ExecStartPre=/bin/sh -c 'ip link show xfrm102 >/dev/null 2>&1 && ip link del xfr
 
 # ---- xfrm101（if_id=101）----
 ExecStart=/usr/sbin/ip link add xfrm101 type xfrm if_id 101
-ExecStart=/usr/sbin/ip addr add 169.254.208.48/30 dev xfrm101
+ExecStart=/usr/sbin/ip addr add 169.254.208.49/30 dev xfrm101
 ExecStart=/usr/sbin/ip link set xfrm101 up
 
 # ---- xfrm102（if_id=102） ----
 ExecStart=/usr/sbin/ip link add xfrm102 type xfrm if_id 102
-ExecStart=/usr/sbin/ip addr add 169.254.125.244/30 dev xfrm102
+ExecStart=/usr/sbin/ip addr add 169.254.125.245/30 dev xfrm102
 ExecStart=/usr/sbin/ip link set xfrm102 up
 
 # ---- 停止時に削除（無くてもOK）----
@@ -107,10 +107,13 @@ systemctl enable --now xfrm-ifaces.service
 ########################################
 apt install frr -y
 sed -i 's/^bgpd=no/bgpd=yes/' /etc/frr/daemons
+echo 'watchfrr_enable=yes' >> /etc/frr/daemons
 systemctl enable --now frr
 
 cat <<EOF > /etc/frr/frr.conf
 EOF
+chown frr:frr /etc/frr/frr.conf
+chmod 640 /etc/frr/frr.conf
 
 ########################################
 # Strongswan settings
