@@ -7,22 +7,31 @@
 # pipefail : パイプラインの返り値を最後のエラー終了値にする (エラー終了値がない場合は0を返す)
 set -euo pipefail
 
+########################################
 # Package Update
+########################################
 apt update -y
 
-# Timezone
+########################################
+# TimeZone
+########################################
 timedatectl set-timezone Asia/Tokyo
 
+########################################
 # Locale & Keymap
+########################################
 localectl set-locale LANG=ja_JP.UTF-8
 sed -i 's/^XKBLAYOUT=.*/XKBLAYOUT="jp"/' /etc/default/keyboard
 dpkg-reconfigure -f noninteractive keyboard-configuration # 設定再構築
 setupcon # ttyへ即時反映
 
-# Firewall 無効化
+########################################
+# Firewall 
+########################################
 ufw disable
 
-# Network
+########################################
+# Network 
 ### all: 全インターフェース適用
 ### default: インターフェース側で未設定の場合に適用
 ### ip_forward = 1 [あるNICで受信したバケットを別NICへ送出する]
@@ -31,6 +40,7 @@ ufw disable
 ### ip_no_pmtu_disc = 0 [通信遅延をなくすためPath MTU Discoveryを無効化]
 ### accept_redirects = 0 [セキュリティ上の理由よりICMPリダイレクトパケットの受入無効化]
 ### send_redirects = 0 [セキュリティ上の理由よりICMPリダイレクトパケットの送出無効化]
+########################################
 cat <<EOF > /etc/sysctl.d/99-vpn.conf
 net.ipv4.ip_forward = 1
 net.ipv4.conf.all.rp_filter = 0
@@ -47,19 +57,55 @@ EOF
 ### sysctl -p は /etc/sysctl.conf のみ反映される
 sysctl --system
 
-# Strongswan install (strongswan-swanctlもインストールされる&サービス自動起動有効化される)
+########################################
+# Strongswan install
+### strongswan-swanctlもインストールされる&サービス自動起動有効化される
+########################################
 apt install charon-systemd -y
 ### strongswan-charon strongswan-starter 自動削除
 apt autoremove -y
 
+########################################
+# XFMR 
+########################################
+# AddressにはTGWのトンネル定義の値を入れること
+cat <<EOF > /etc/systemd/system/xfrm-ifaces.service
+[Unit]
+Description=Create XFRM interfaces for IPsec
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+
+# すでにあってもOK（無ければ無視）: 先に消す
+ExecStartPre=-/usr/sbin/ip link del xfrm101
+ExecStartPre=-/usr/sbin/ip link del xfrm102
+
+# 作成
+ExecStart=/usr/sbin/ip link add xfrm101 type xfrm if_id 101
+ExecStart=/usr/sbin/ip addr add 169.254.208.48/30 dev xfrm101
+ExecStart=/usr/sbin/ip link set xfrm101 up
+
+ExecStart=/usr/sbin/ip link add xfrm102 type xfrm if_id 102
+ExecStart=/usr/sbin/ip addr add 169.254.125.244/30 dev xfrm102
+ExecStart=/usr/sbin/ip link set xfrm102 up
+
+# 停止時は消す（無ければ無視）
+ExecStop=-/usr/sbin/ip link del xfrm101
+ExecStop=-/usr/sbin/ip link del xfrm102
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl enable --now xfrm-ifaces.service
+
+########################################
 # Strongswan settings
+########################################
 cat <<EOF > /etc/swanctl/conf.d/tgw.tf
 EOF
-
-mkdir -p /etc/swanctl/scripts
-cat <<EOF >  /etc/swanctl/scripts/vti-updown.sh
-EOF
-chmod +x /etc/swanctl/scripts/vti-updown.sh
 
 cat <<EOF > /etc/strongswan.d/add-charon.conf
 charon {
