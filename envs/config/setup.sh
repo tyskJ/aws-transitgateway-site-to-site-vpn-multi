@@ -71,7 +71,7 @@ apt autoremove -y
 # AddressにはTGWのトンネル定義の値を入れること
 cat <<EOF > /etc/systemd/system/xfrm-ifaces.service
 [Unit]
-Description=Create XFRM interfaces for IPsec
+Description=Create XFRM interfaces for IPsec (idempotent)
 After=network-online.target
 Wants=network-online.target
 
@@ -79,27 +79,34 @@ Wants=network-online.target
 Type=oneshot
 RemainAfterExit=yes
 
-# すでにあってもOK（無ければ無視）: 先に消す
-ExecStartPre=-/usr/sbin/ip link del xfrm101
-ExecStartPre=-/usr/sbin/ip link del xfrm102
+# ---- 既存があれば消す（無ければ何もしない）----
+ExecStartPre=/bin/sh -c 'ip link show xfrm101 >/dev/null 2>&1 && ip link del xfrm101 || true'
+ExecStartPre=/bin/sh -c 'ip link show xfrm102 >/dev/null 2>&1 && ip link del xfrm102 || true'
 
-# 作成
+# ---- xfrm101（if_id=101）----
 ExecStart=/usr/sbin/ip link add xfrm101 type xfrm if_id 101
 ExecStart=/usr/sbin/ip addr add 169.254.208.48/30 dev xfrm101
 ExecStart=/usr/sbin/ip link set xfrm101 up
 
+# ---- xfrm102（if_id=102） ----
 ExecStart=/usr/sbin/ip link add xfrm102 type xfrm if_id 102
 ExecStart=/usr/sbin/ip addr add 169.254.125.244/30 dev xfrm102
 ExecStart=/usr/sbin/ip link set xfrm102 up
 
-# 停止時は消す（無ければ無視）
-ExecStop=-/usr/sbin/ip link del xfrm101
-ExecStop=-/usr/sbin/ip link del xfrm102
+# ---- 停止時に削除（無くてもOK）----
+ExecStop=/bin/sh -c 'ip link show xfrm101 >/dev/null 2>&1 && ip link del xfrm101 || true'
+ExecStop=/bin/sh -c 'ip link show xfrm102 >/dev/null 2>&1 && ip link del xfrm102 || true'
 
 [Install]
 WantedBy=multi-user.target
 EOF
 systemctl enable --now xfrm-ifaces.service
+
+########################################
+# BGP
+########################################
+
+
 
 ########################################
 # Strongswan settings
