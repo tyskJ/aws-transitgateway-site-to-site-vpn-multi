@@ -51,3 +51,20 @@ sysctl --system
 apt install charon-systemd -y
 ### strongswan-charon strongswan-starter 自動削除
 apt autoremove -y
+
+# Strongswan settings
+cat <<EOF > /etc/swanctl/conf.d/tgw.tf
+EOF
+
+cat <<EOF > /etc/strongswan.d/add-charon.conf
+charon {
+
+    # Install routes into a separate routing table for established IPsec
+    # tunnels.
+    install_routes = no
+
+    # Install virtual IP addresses.
+    install_virtual_ip = no
+
+}
+EOF
