@@ -106,7 +106,8 @@ systemctl enable --now xfrm-ifaces.service
 # BGP
 ########################################
 apt install frr -y
-
+sed -i 's/^bgpd=no/bgpd=yes/' /etc/frr/daemons
+systemctl enable --now frr
 
 ########################################
 # Strongswan settings
