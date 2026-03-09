@@ -94,24 +94,6 @@ resource "aws_vpn_connection" "this" {
     Name = each.value.name
   }
 }
-output "tunnel1_customerside_insideip" {
-  value = aws_vpn_connection.this["onpremises_gateway_ec2_a"].tunnel1_cgw_inside_address
-}
-output "tunnel1_awsside_insideip" {
-  value = aws_vpn_connection.this["onpremises_gateway_ec2_a"].tunnel1_vgw_inside_address
-}
-output "tunnel2_customerside_insideip" {
-  value = aws_vpn_connection.this["onpremises_gateway_ec2_a"].tunnel2_cgw_inside_address
-}
-output "tunnel2_awsside_insideip" {
-  value = aws_vpn_connection.this["onpremises_gateway_ec2_a"].tunnel2_vgw_inside_address
-}
-output "tunnel1_awsside_gip" {
-  value = aws_vpn_connection.this["onpremises_gateway_ec2_a"].tunnel1_address
-}
-output "tunnel2_awsside_gip" {
-  value = aws_vpn_connection.this["onpremises_gateway_ec2_a"].tunnel2_address
-}
 
 /************************************************************
 S2S VPN Connections PSK

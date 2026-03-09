@@ -48,9 +48,22 @@ resource "aws_network_interface" "this" {
 }
 
 /************************************************************
+Elastice IP
+************************************************************/
+resource "aws_eip" "this" {
+  for_each   = local.eips
+  depends_on = [aws_internet_gateway.this]
+
+  domain = each.value.domain
+  tags = {
+    Name = each.value.name
+  }
+}
+
+/************************************************************
 EC2 - Gateway
 ************************************************************/
-resource "aws_instance" "this" {
+resource "aws_instance" "gateway" {
   for_each = local.instances
 
   ami           = data.aws_ami_ids.ubuntu.ids[0]
@@ -83,23 +96,64 @@ resource "aws_instance" "this" {
   force_destroy           = true
   iam_instance_profile    = aws_iam_instance_profile.this[each.value.instanceprofile_key].name
   source_dest_check       = false
+  user_data_base64 = base64gzip(
+    templatefile("${path.module}/config/setup.sh", {
+      nw_conf = file("${path.module}/config/99-vpn.conf")
+      xfrm_conf = templatefile("${path.module}/config/xfrm-ifaces.service", {
+        cgwside_tunnel1_insideip = aws_vpn_connection.this[each.key].tunnel1_cgw_inside_address
+        cgwside_tunnel2_insideip = aws_vpn_connection.this[each.key].tunnel2_cgw_inside_address
+      })
+      cgw_gip             = aws_eip.this[each.key].public_ip
+      awsside_tunnel1_gip = aws_vpn_connection.this[each.key].tunnel1_address
+      awsside_tunnel2_gip = aws_vpn_connection.this[each.key].tunnel2_address
+      tunnel1_psk         = aws_vpn_connection.this[each.key].tunnel1_preshared_key
+      tunnel2_psk         = aws_vpn_connection.this[each.key].tunnel2_preshared_key
+      charon_conf         = file("${path.module}/config/add-charon.conf")
+      ens6_conf = templatefile("${path.module}/config/20-ens6.network", {
+        onpremises_client_private_a_subnet_cidr           = local.subnets.onpremises_client_private_a.cidr
+        onpremises_gateway_private_a_subnet_vpc_router_ip = cidrhost(local.subnets.onpremises_gateway_public_a.cidr, 1)
+        aws_vpc_cidr                                      = local.vpcs.aws.cidr
+      })
+      rtbrule_conf = templatefile("${path.module}/config/tgw-ecmp.service", {
+        aws_vpc_cidr = local.vpcs.aws.cidr
+      })
+      frr_conf = templatefile("${path.module}/config/frr_${each.key}.conf", {
+        cgw_asn                  = 65000
+        cgw_gip                  = aws_eip.this[each.key].public_ip
+        cgwside_tunnel1_insideip = aws_vpn_connection.this[each.key].tunnel1_cgw_inside_address
+        cgwside_tunnel2_insideip = aws_vpn_connection.this[each.key].tunnel2_cgw_inside_address
+        aws_tgw_asn              = 64512
+        awsside_tunnel1_insideip = aws_vpn_connection.this[each.key].tunnel1_vgw_inside_address
+        awsside_tunnel2_insideip = aws_vpn_connection.this[each.key].tunnel2_vgw_inside_address
+        onpremises_nw_cidr       = local.vpcs.onpremises.cidr
+      })
+      snat_conf = templatefile("${path.module}/config/snat_sources.conf", {
+        aws_client_private_a_subnet_cidr        = local.subnets.aws_client_private_a.cidr
+        onpremises_client_private_a_subnet_cidr = local.subnets.onpremises_client_private_a.cidr
+      })
+      ipset_conf = file("${path.module}/config/nat-ens5-ipset.service")
+    })
+  )
   tags = {
     Name = each.value.name
+  }
+  # userdataを変更すると再起動が走るため抑止
+  # 代わりに、user_data_replace_on_change は効かなくなる
+  lifecycle {
+    ignore_changes = [
+      user_data_base64
+    ]
   }
 }
 
 /************************************************************
-Elastice IP
+Elastice IP Association
 ************************************************************/
-resource "aws_eip" "this" {
-  for_each   = local.eips
-  depends_on = [aws_internet_gateway.this]
+resource "aws_eip_association" "this" {
+  for_each = local.eips
 
-  domain   = each.value.domain
-  instance = aws_instance.this[each.value.instance_key].id
-  tags = {
-    Name = each.value.name
-  }
+  instance_id   = aws_instance.gateway[each.value.instance_key].id
+  allocation_id = aws_eip.this[each.key].allocation_id
 }
 
 /************************************************************
@@ -107,9 +161,9 @@ Secondary ENI
 ************************************************************/
 resource "aws_network_interface_attachment" "this" {
   for_each   = local.instances
-  depends_on = [aws_eip.this]
+  depends_on = [aws_eip_association.this]
 
-  instance_id          = aws_instance.this[each.key].id
+  instance_id          = aws_instance.gateway[each.key].id
   network_interface_id = aws_network_interface.this[each.value.secondary_eni_key].id
   device_index         = 1
 }
